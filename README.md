@@ -3,9 +3,10 @@ Sample Asp.net application to connect to Azure SQL using Managed Identity
 
 Follow the below steps to enable Manged Identity connection to App Service:
 1. Grant database access to Azure AD user: Enable Azure AD authentication to SQL Database by assigning an Azure AD user as the Active Directory admin of the server.
-    azureaduser=$(az ad user list --filter "userPrincipalName eq '<user-principal-name>'" --query [].objectId --output tsv)
-    az sql server ad-admin create --resource-group myResourceGroup --server-name <server-name> --display-name ADMIN --object-id $azureaduser
-
+   <br/> <pre>azureaduser=$(az ad user list --filter "userPrincipalName eq '&lt;user-principal-name&gt;'" --query [].objectId --output tsv)
+    az sql server ad-admin create --resource-group myResourceGroup --server-name &lt;server-name&gt; --display-name ADMIN --object-id $azureaduser
+    </pre>
+    
 2. Set up Visual Studio
     1. Add your Azure AD user in Visual Studio by selecting File > Account Settings from the menu, and click Add an account.
     2. To set the Azure AD user for Azure service authentication, select Tools > Options from the menu, then select Azure Service Authentication > Account Selection. Select the Azure AD user you added and click OK.
@@ -35,11 +36,12 @@ Follow the below steps to enable Manged Identity connection to App Service:
     1. Sign in to SQL Database by using the SQLCMD command
            <pre> sqlcmd -S <server-name>.database.windows.net -d <db-name> -U &lt;aad-user-name&gt; -P "&lt;aad-password&gt;" -G -l 30 </pre>
     2. Grant the permissions your app in SQL
+    <pre>
             CREATE USER [<identity-name>] FROM EXTERNAL PROVIDER;
             ALTER ROLE db_datareader ADD MEMBER [<identity-name>];
             ALTER ROLE db_datawriter ADD MEMBER [<identity-name>];
             ALTER ROLE db_ddladmin ADD MEMBER [<identity-name>];
             GO
-  
+            </pre>
 6. Modify connection string in App Service
      <pre>  az webapp config connection-string delete --resource-group myResourceGroup --name &lt;app-name&gt; --setting-names MyDbConnection </pre>
